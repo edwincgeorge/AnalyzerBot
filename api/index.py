@@ -13,34 +13,32 @@ user_sessions = {}
 
 def send_welcome(chat_id):
     message = (
-        "🚀 *Instagram Non-Following-Back Finder Bot*\n\n"
+        "🚀 Instagram Non-Following-Back Finder Bot\n\n"
 
-        "📥 *How to use:*\n"
+        "📥 How to use:\n"
         "1. Go to Instagram → Settings → Accounts Center\n"
         "2. Download your account data\n"
-        "3. Select *Followers & Following* data ONLY\n"
+        "3. Select Followers & Following data ONLY\n"
         "4. Extract the ZIP file\n\n"
 
-        "📤 *Upload:*\n"
-        "• following.json\n"
-        "• followers_*.json\n\n"
+        "📤 Upload:\n"
+        "- following.json\n"
+        "- followers_*.json\n\n"
 
         "⚙️ Bot will:\n"
-        "• Analyze your data\n"
-        "• Find non-followers\n"
-        "• Send CSV 📄\n\n"
+        "- Analyze your data\n"
+        "- Find non-followers\n"
+        "- Send CSV\n\n"
 
         "━━━━━━━━━━━━━━━\n"
-        "💻 *Developed by Edwin* ✨\n"
+        "💻 Developed by Edwin\n"
         "🔗 https://github.com/edwincgeorge/AnalyzerBot\n"
-        "⚡ Smart • Fast • Clean\n"
         "━━━━━━━━━━━━━━━"
     )
 
     requests.post(f"{API}/sendMessage", json={
         "chat_id": chat_id,
-        "text": message,
-        "parse_mode": "Markdown"
+        "text": message
     })
     
 def ensure_webhook():
