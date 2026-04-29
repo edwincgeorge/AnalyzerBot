@@ -91,7 +91,7 @@ def app(environ, start_response):   # ✅ THIS is the required entrypoint
             output_file = os.path.join(user_dir, "result.csv")
 
             subprocess.run(
-                ["python", "gg.py", user_dir, output_file],
+                ["python", "test.py", user_dir, output_file],
                 check=True
             )
 
