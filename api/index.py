@@ -19,21 +19,20 @@ def send_welcome(chat_id):
         "1. Go to Instagram → Settings → Accounts Center\n"
         "2. Download your account data\n"
         "3. Select *Followers & Following* data ONLY\n"
-        "4. Download and extract the ZIP file\n\n"
-        "5. Upload these files here:\n"
-        "   • `following.json`\n"
-        "   • `followers_*.json`\n\n"
+        "4. Extract the ZIP file\n\n"
 
-        "⚙️ The bot will automatically:\n"
-        "• Analyze your followers\n"
-        "• Find who doesn't follow you back\n"
-        "• Send you a CSV file 📄\n\n"
+        "📤 *Upload:*\n"
+        "• following.json\n"
+        "• followers_*.json\n\n"
 
-        "⏳ Just upload files and wait for result.\n\n"
+        "⚙️ Bot will:\n"
+        "• Analyze your data\n"
+        "• Find non-followers\n"
+        "• Send CSV 📄\n\n"
 
         "━━━━━━━━━━━━━━━\n"
         "💻 *Developed by Edwin* ✨\n"
-        "Github Repo Link : https://github.com/edwincgeorge/AnalyzerBot"
+        "🔗 https://github.com/edwincgeorge/AnalyzerBot\n"
         "⚡ Smart • Fast • Clean\n"
         "━━━━━━━━━━━━━━━"
     )
@@ -43,7 +42,7 @@ def send_welcome(chat_id):
         "text": message,
         "parse_mode": "Markdown"
     })
-
+    
 def ensure_webhook():
     try:
         r = requests.get(f"{API}/getWebhookInfo").json()
@@ -77,8 +76,11 @@ def app(environ, start_response):
         chat_id = message.get("chat", {}).get("id")
 
         if "document" not in message:
+            if chat_id:
+                send_welcome(chat_id)
+
             start_response("200 OK", [("Content-Type", "text/plain")])
-            return [b"No file"]
+            return [b"OK"]
 
         doc = message["document"]
         filename = doc["file_name"]
