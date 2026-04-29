@@ -11,6 +11,37 @@ WEBHOOK_URL = "https://analyzer-bot.vercel.app/api"
 
 user_sessions = {}
 
+def send_welcome(chat_id):
+    message = (
+        "🚀 *Instagram Non-Following-Back Finder Bot*\n\n"
+
+        "📥 *How to use:*\n"
+        "1. Go to Instagram → Settings → Accounts Center\n"
+        "2. Download your account data\n"
+        "3. Select *Followers & Following* data ONLY\n"
+        "4. Download and extract the ZIP file\n\n"
+        "5. Upload these files here:\n"
+        "   • `following.json`\n"
+        "   • `followers_*.json`\n\n"
+
+        "⚙️ The bot will automatically:\n"
+        "• Analyze your followers\n"
+        "• Find who doesn't follow you back\n"
+        "• Send you a CSV file 📄\n\n"
+
+        "⏳ Just upload files and wait for result.\n\n"
+
+        "━━━━━━━━━━━━━━━\n"
+        "💻 *Developed by Edwin* ✨\n"
+        "⚡ Smart • Fast • Clean\n"
+        "━━━━━━━━━━━━━━━"
+    )
+
+    requests.post(f"{API}/sendMessage", json={
+        "chat_id": chat_id,
+        "text": message,
+        "parse_mode": "Markdown"
+    })
 
 def ensure_webhook():
     try:
@@ -23,7 +54,7 @@ def ensure_webhook():
         pass
 
 
-def app(environ, start_response):   # ✅ THIS is the required entrypoint
+def app(environ, start_response): 
 
     ensure_webhook()
 
@@ -86,7 +117,7 @@ def app(environ, start_response):   # ✅ THIS is the required entrypoint
             return [b"OK"]
 
         if session["has_following"] and session["followers"] > 0:
-            send_message(chat_id, "Processing...")
+            send_message(chat_id, "Processing your data 🚀...")
 
             output_file = os.path.join(user_dir, "result.csv")
 
