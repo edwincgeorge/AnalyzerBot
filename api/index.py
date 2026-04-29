@@ -33,6 +33,7 @@ def send_welcome(chat_id):
 
         "━━━━━━━━━━━━━━━\n"
         "💻 *Developed by Edwin* ✨\n"
+        "Github Repo Link : https://github.com/edwincgeorge/AnalyzerBot"
         "⚡ Smart • Fast • Clean\n"
         "━━━━━━━━━━━━━━━"
     )
