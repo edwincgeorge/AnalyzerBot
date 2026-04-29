@@ -7,7 +7,7 @@ import shutil
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
-WEBHOOK_URL = "https://your-app.vercel.app/api"
+WEBHOOK_URL = "https://analyzer-bot.vercel.app/api"
 
 user_sessions = {}
 
