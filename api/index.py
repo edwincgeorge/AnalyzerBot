@@ -7,7 +7,7 @@ import shutil
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
-WEBHOOK_URL = "https://your-app.vercel.app/api/webhook"
+WEBHOOK_URL = "https://your-app.vercel.app/api"
 
 user_sessions = {}
 
@@ -18,30 +18,35 @@ def ensure_webhook():
         current_url = r.get("result", {}).get("url")
 
         if current_url != WEBHOOK_URL:
-            requests.get(
-                f"{API}/setWebhook",
-                params={"url": WEBHOOK_URL}
-            )
+            requests.get(f"{API}/setWebhook", params={"url": WEBHOOK_URL})
     except:
         pass
 
 
-# ---------------- MAIN HANDLER ----------------
-def handler(request):
+def app(environ, start_response):   # ✅ THIS is the required entrypoint
 
     ensure_webhook()
 
-    if request.method != "POST":
-        return {"statusCode": 200, "body": "OK"}
-
-    data = json.loads(request.body)
-
     try:
+        request_method = environ["REQUEST_METHOD"]
+
+        if request_method != "POST":
+            start_response("200 OK", [("Content-Type", "text/plain")])
+            return [b"OK"]
+
+        try:
+            request_body = environ["wsgi.input"].read()
+            data = json.loads(request_body)
+        except:
+            start_response("200 OK", [("Content-Type", "text/plain")])
+            return [b"Invalid"]
+
         message = data.get("message", {})
         chat_id = message.get("chat", {}).get("id")
 
         if "document" not in message:
-            return {"statusCode": 200}
+            start_response("200 OK", [("Content-Type", "text/plain")])
+            return [b"No file"]
 
         doc = message["document"]
         filename = doc["file_name"]
@@ -58,22 +63,17 @@ def handler(request):
         user_dir = f"/tmp/{chat_id}"
         os.makedirs(user_dir, exist_ok=True)
 
-        file_info = requests.get(
-            f"{API}/getFile",
-            params={"file_id": file_id}
-        ).json()
-
+        # Get file
+        file_info = requests.get(f"{API}/getFile", params={"file_id": file_id}).json()
         file_path = file_info["result"]["file_path"]
 
         file_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_path}"
 
         local_path = os.path.join(user_dir, filename)
 
-        # Download file
         with open(local_path, "wb") as f:
             f.write(requests.get(file_url).content)
 
-        # Track file type
         if filename == "following.json":
             session["has_following"] = True
 
@@ -81,8 +81,9 @@ def handler(request):
             session["followers"] += 1
 
         else:
-            send_message(chat_id, "Invalid file name")
-            return {"statusCode": 200}
+            send_message(chat_id, "Invalid file")
+            start_response("200 OK", [])
+            return [b"OK"]
 
         if session["has_following"] and session["followers"] > 0:
             send_message(chat_id, "Processing...")
@@ -90,7 +91,7 @@ def handler(request):
             output_file = os.path.join(user_dir, "result.csv")
 
             subprocess.run(
-                ["python", "test.py", user_dir, output_file],
+                ["python", "gg.py", user_dir, output_file],
                 check=True
             )
 
@@ -102,10 +103,9 @@ def handler(request):
     except Exception as e:
         send_message(chat_id, f"Error: {str(e)}")
 
-    return {"statusCode": 200}
+    start_response("200 OK", [("Content-Type", "text/plain")])
+    return [b"OK"]
 
-
-# ---------------- TELEGRAM HELPERS ----------------
 
 def send_message(chat_id, text):
     requests.post(f"{API}/sendMessage", json={
